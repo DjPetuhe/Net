@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace lab1Net.Classes
 {
@@ -87,6 +88,16 @@ namespace lab1Net.Classes
         private static bool IsThereRoom(int number)
         {
             if (roomNumbers.Contains(number)) return true;
+            return false;
+        }
+
+        public bool IsBooked(DateTime start, DateTime finish)
+        {
+            foreach (var booking in RoomBookings)
+            {
+                var room = booking.BookedRooms.Select(b => b).Where(b => b.Item1.RoomNumber == this.RoomNumber).First();
+                if (start.Date < room.Item3.Date && finish.Date < room.Item2.Date) return true;
+            }
             return false;
         }
     }

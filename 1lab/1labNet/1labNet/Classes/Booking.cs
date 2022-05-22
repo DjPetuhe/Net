@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace lab1Net.Classes
 {
@@ -13,16 +10,22 @@ namespace lab1Net.Classes
         public readonly List<(HotelRoom, DateTime, DateTime)> BookedRooms;
         public bool Canceled { get; set; } = false;
 
-        //TODO: Сделать, чтоб клиенту и отелю добавлялись данные об этом бронировании
         public Booking(Client Person, List<(HotelRoom, DateTime, DateTime)> BookedRooms)
         {
             this.Person = Person;
             if (BookingPossible(BookedRooms))
             {
                 this.BookedRooms = BookedRooms;
+                this.Person.Bookings.Add(this);
+                foreach (var room in BookedRooms)
+                {
+                    room.Item1.RoomBookings.Add(this);
+                }
+                this.Price = CalculatePrice(); 
             }
             else
             {
+                Console.WriteLine("Booking error!");
                 this.BookedRooms = null;
                 Canceled = true;
             }
@@ -44,16 +47,37 @@ namespace lab1Net.Classes
             else return "Booking canceled!";
         }
 
-        //TODO: Доделать проверку на то, можно ли бронировать в это время эти номера
-        private bool BookingPossible(List<(HotelRoom, DateTime, DateTime)> BookedRooms)
+        private static bool BookingPossible(List<(HotelRoom, DateTime, DateTime)> BookedRooms)
         {
-            return false;
+            HashSet<HotelRoom> doppelgangerFinder = new ();
+            foreach (var room in BookedRooms)
+            {
+                if (!doppelgangerFinder.Add(room.Item1) || room.Item3.Date < room.Item2.Date || room.Item1.IsBooked(room.Item2, room.Item3))
+                    return false;
+            }
+            return true;
         }
 
-        //TODO: Доделать метод, который будет подсчитывать цену
-        private int CalculatePrice(List<(HotelRoom, DateTime, DateTime)> BookedRooms)
+        private int CalculatePrice()
         {
-            return 0;
+            int totalPrice = 0;
+            foreach (var room in BookedRooms)
+            {
+                int tempPrice = room.Item1.Classification switch
+                {
+                    RoomClass.Standart => 50,
+                    RoomClass.DeLux => 100,
+                    RoomClass.Presidential => 500,
+                    _ => 0
+                };
+                foreach (var extra in room.Item1.Extra)
+                {
+                    tempPrice += 10 * extra.Value;
+                }
+                tempPrice *= (room.Item3 - room.Item2).Days + 1;
+                totalPrice += tempPrice;
+            }
+            return totalPrice;
         }
     }
 }
