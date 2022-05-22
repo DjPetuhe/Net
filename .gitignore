@@ -1,0 +1,10 @@
+
+*.sln
+
+*.csproj
+
+1lab/1labNet/.vs/
+
+1lab/1labNet/1labNet/bin/
+
+1lab/1labNet/1labNet/obj/
