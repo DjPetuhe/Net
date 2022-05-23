@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace lab1Net.Classes
+namespace lab1Net
 {
     internal class Client
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace lab1Net.Classes
+namespace lab1Net
 {
     internal class Booking
     {
@@ -65,9 +65,9 @@ namespace lab1Net.Classes
             {
                 int tempPrice = room.Item1.Classification switch
                 {
-                    RoomClass.Standart => 50,
-                    RoomClass.DeLux => 100,
-                    RoomClass.Presidential => 500,
+                    RoomClass.Standart => 50 + 10 * room.Item1.Capacity,
+                    RoomClass.DeLux => 100 + 20 * room.Item1.Capacity,
+                    RoomClass.Presidential => 500 + 50 * room.Item1.Capacity,
                     _ => 0
                 };
                 foreach (var extra in room.Item1.Extra)

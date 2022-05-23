@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace lab1Net.Classes
+namespace lab1Net
 {
     enum RoomClass
     {
@@ -49,11 +49,12 @@ namespace lab1Net.Classes
 
         public List<Booking> RoomBookings { get; set; } = new();
 
-        public HotelRoom(RoomClass Classification = RoomClass.Standart, int Capacity = 1, Dictionary<string, int> Extra = null)
+        public HotelRoom(int RoomNumber, RoomClass Classification = RoomClass.Standart, int Capacity = 1, Dictionary<string, int> Extra = null)
         {
+            this.RoomNumber = RoomNumber;
             this.Classification = Classification;
             this.Capacity = Capacity;
-            this.Extra = Extra;
+            this.Extra = Extra ?? new();
         }
 
         public void SetExtra(string Ex, int Amount)
@@ -96,7 +97,7 @@ namespace lab1Net.Classes
             foreach (var booking in RoomBookings)
             {
                 var room = booking.BookedRooms.Select(b => b).Where(b => b.Item1.RoomNumber == this.RoomNumber).First();
-                if (start.Date < room.Item3.Date && finish.Date < room.Item2.Date) return true;
+                if (start.Date < room.Item3.Date && room.Item2.Date < finish.Date) return true;
             }
             return false;
         }
