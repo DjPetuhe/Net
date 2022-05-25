@@ -81,7 +81,7 @@ namespace lab1Net
                 hotelRoomStr += $",\nAdditionaly:";
                 foreach (var ex in Extra)
                 {
-                    hotelRoomStr += $"\n{ex.Key}, Amount: {ex.Value};";
+                    hotelRoomStr += $"\n+ {ex.Key}, Amount: {ex.Value};";
                 }
             }
             return hotelRoomStr;

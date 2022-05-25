@@ -20,7 +20,7 @@ namespace lab1Net
             }
         }
 
-        public List<Booking> Bookings { get; set; } = new();
+        public int BookingsCount { get; set; } = 0;
         public Client(string Name = "Unknown", string Surname = "Unknown", int Age = 1)
         {
             this.Name = Name;

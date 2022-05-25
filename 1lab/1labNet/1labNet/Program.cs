@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace lab1Net
 {
@@ -123,6 +122,127 @@ namespace lab1Net
 
             List<Booking> bookings = new() { booking1, booking2, booking3, booking4, booking5, booking6, booking7, booking8, booking9, booking10 };
 
+            // 1.
+            Console.WriteLine("#1----------------------------------------------\n");
+            var first = clients.Select(c => c);
+            Output(first);
+
+            // 2.
+            Console.WriteLine("#2----------------------------------------------\n");
+            var second = from rooms in hotelRooms
+                         select rooms.RoomNumber;
+            Output(second);
+
+            // 3.
+            Console.WriteLine("#3----------------------------------------------\n");
+            var third = hotelRooms.Select(r => r).Where(r => r.Capacity > 2);
+            Output(third);
+
+            // 4.
+            Console.WriteLine("#4----------------------------------------------\n");
+            var fourth = from b in bookings
+                         where b.Price < 1000
+                         select b;
+            Output(fourth);
+
+            // 5.
+            Console.WriteLine("#5----------------------------------------------\n");
+            var fifth = from b in hotelRooms
+                        orderby b.Capacity
+                        select b;
+            Output(fifth);
+
+            // 6.
+            Console.WriteLine("#6----------------------------------------------\n");
+            var sixth = clients
+                .Where(c => c.BookingsCount > 0)
+                .OrderByDescending(c => c.BookingsCount)
+                .ThenBy(c => c.Surname)
+                .Select(c => new { c.Name, c.Surname, c.BookingsCount });
+            Output(sixth);
+
+            // 7.
+            Console.WriteLine("#7----------------------------------------------\n");
+            var seventh = (from b in bookings
+                           orderby b.Price descending
+                           select b).FirstOrDefault();
+            Console.WriteLine(seventh + "\n");
+
+            // 8.
+            Console.WriteLine("#8----------------------------------------------\n");
+            var eighth = hotelRooms
+                .OrderByDescending(h => h.RoomBookings.Count)
+                .Select(h => new { h.RoomNumber, AmountOfBookings = h.RoomBookings.Count })
+                .FirstOrDefault();
+            Console.WriteLine(eighth + "\n");
+
+            // 9.
+            Console.WriteLine("#9----------------------------------------------\n");
+            var ninth = from c in clients
+                             where Regex.IsMatch(c.Name, @"^Y\w+")
+                             select c;
+            Output(ninth);
+
+            // 10.
+            Console.WriteLine("#10----------------------------------------------\n");
+            var tenth = (from b in bookings
+                               select b.Price).Average();
+            Console.WriteLine("Avarage price: " + tenth + "\n");
+
+            // 11.
+            Console.WriteLine("#11----------------------------------------------\n");
+            var eleventh = from b in bookings
+                           from c in clients
+                           where b.Person == c
+                           select new { c, bookingID = b.ID };
+            Output(eleventh);
+
+            // 12.
+            Console.WriteLine("#12----------------------------------------------\n");
+            var twelfth = bookings.SkipWhile(b => b.ID < 4).TakeWhile(b => b.ID < 6);
+            Output(twelfth);
+
+            // 13.
+            Console.WriteLine("#13----------------------------------------------\n");
+            var thirteenth  = (from h in hotelRooms
+                               where h.Classification  == RoomClass.Standart
+                               select h)
+                               .Concat(
+                               from h in hotelRooms
+                               where h.Classification == RoomClass.Presidential
+                               select h);
+            Output(thirteenth);
+
+            // 14.
+            Console.WriteLine("#14----------------------------------------------\n");
+            var fourteenth = bookings
+                .Join(clients, b => b.Person, c => c, (b, c) => new
+                {
+                    Booking = b.ID,
+                    Client = new { c.Name, c.Surname }
+                });
+            Output(fourteenth);
+
+            // 15.
+            Console.WriteLine("#15----------------------------------------------\n");
+            var fiftheenth = bookings
+                .SelectMany(b => b.BookedRooms, (bks, client) => new { bks, client })
+                .Select(bc => new
+                {
+                    BookingID = bc.bks.ID,
+                    Room = bc.client.Item1.RoomNumber,
+                    Days = bc.client.Item3.Subtract(bc.client.Item2).Days + 1,
+                    Client = new { bc.bks.Person.Name, bc.bks.Person.Surname }
+                });
+            Output(fiftheenth);
+        }
+        public static void Output<T>(IEnumerable<T> l)
+        {
+            foreach (T el in l)
+            {
+                Console.WriteLine(el + "\n");
+            }
+            Console.WriteLine();
         }
     }
 }

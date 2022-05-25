@@ -5,6 +5,8 @@ namespace lab1Net
 {
     internal class Booking
     {
+        private static int bookingAmount = 0;
+        public readonly int ID;
         public readonly Client Person;
         public readonly int Price;
         public readonly List<(HotelRoom, DateTime, DateTime)> BookedRooms;
@@ -15,13 +17,15 @@ namespace lab1Net
             this.Person = Person;
             if (BookingPossible(BookedRooms))
             {
+                bookingAmount++;
                 this.BookedRooms = BookedRooms;
-                this.Person.Bookings.Add(this);
+                this.Person.BookingsCount++; ;
                 foreach (var room in BookedRooms)
                 {
                     room.Item1.RoomBookings.Add(this);
                 }
-                this.Price = CalculatePrice(); 
+                this.Price = CalculatePrice();
+                this.ID = bookingAmount;
             }
             else
             {
@@ -35,12 +39,12 @@ namespace lab1Net
         {
             if (!Canceled)
             {
-                string bookingStr = $"Person: {Person.Name} {Person.Surname},\nPrice: {Price},\nBooked:";
-                foreach (var booked in BookedRooms)
+                string bookingStr = $"ID: {ID},\nPerson: {Person.Name} {Person.Surname},\nPrice: {Price},\nBooked:";
+                for (int i = 0; i < BookedRooms.Count; i++)
                 {
-                    bookingStr += $"\n\nFrom: {booked.Item2.ToShortDateString()}," +
-                                  $"\nTo: {booked.Item3.ToShortDateString()}" +
-                                  $"\n{booked.Item1}";
+                    bookingStr += $"\n#{i+1}" + $"\nFrom: {BookedRooms[i].Item2.ToShortDateString()}," +
+                                  $"\nTo: {BookedRooms[i].Item3.ToShortDateString()}" +
+                                  $"\n{BookedRooms[i].Item1}";
                 }
                 return bookingStr;
             }
