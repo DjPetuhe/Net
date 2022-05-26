@@ -7,7 +7,7 @@ namespace lab1Net
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             // initializing clients
             Client client1 = new ("Yura", "Pasternak", 25);
