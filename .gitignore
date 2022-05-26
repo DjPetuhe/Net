@@ -8,3 +8,12 @@
 1lab/1labNet/1labNet/bin/
 
 1lab/1labNet/1labNet/obj/
+*.ini
+
+*.pdf
+
+2lab/Lab2Net/.vs/Lab2Net/v16/
+
+2lab/Lab2Net/Lab2Net/obj/
+
+*.v2
