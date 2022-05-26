@@ -39,7 +39,7 @@ namespace lab1Net
         {
             if (!Canceled)
             {
-                string bookingStr = $"ID: {ID},\nPerson: {Person.Name} {Person.Surname},\nPrice: {Price},\nBooked:";
+                string bookingStr = $"ID: {ID},\nPrice: {Price},\nBooked:";
                 for (int i = 0; i < BookedRooms.Count; i++)
                 {
                     bookingStr += $"\n#{i+1}" + $"\nFrom: {BookedRooms[i].Item2.ToShortDateString()}," +

@@ -122,37 +122,38 @@ namespace lab1Net
 
             List<Booking> bookings = new() { booking1, booking2, booking3, booking4, booking5, booking6, booking7, booking8, booking9, booking10 };
 
-            // 1.
+            // 1. Выбираю и вывожу всех клиентов.
             Console.WriteLine("#1----------------------------------------------\n");
             var first = clients.Select(c => c);
             Output(first);
 
-            // 2.
+            // 2.  Выбираю и вывожу номера комнат в отеле.
             Console.WriteLine("#2----------------------------------------------\n");
             var second = from rooms in hotelRooms
                          select rooms.RoomNumber;
             Output(second);
 
-            // 3.
+            // 3. Выбираю и вывожу информацию про номера отеля с вместимостью больше двух.
             Console.WriteLine("#3----------------------------------------------\n");
             var third = hotelRooms.Select(r => r).Where(r => r.Capacity > 2);
             Output(third);
 
-            // 4.
+            // 4. Выбираю и вывожу все бронирования с ценой меньше 1000.
             Console.WriteLine("#4----------------------------------------------\n");
             var fourth = from b in bookings
                          where b.Price < 1000
                          select b;
             Output(fourth);
 
-            // 5.
+            // 5. Выбираю и вывожу номера отеля в порядке возрастания вместимости комнат.
             Console.WriteLine("#5----------------------------------------------\n");
             var fifth = from b in hotelRooms
                         orderby b.Capacity
                         select b;
             Output(fifth);
 
-            // 6.
+            // 6. Выбираю клиентов, у которых есть хоть одна бронь, в порядке возрастания
+            //    по количеству сделанных броней, а вторичная сортировка по фамилиям.
             Console.WriteLine("#6----------------------------------------------\n");
             var sixth = clients
                 .Where(c => c.BookingsCount > 0)
@@ -161,14 +162,14 @@ namespace lab1Net
                 .Select(c => new { c.Name, c.Surname, c.BookingsCount });
             Output(sixth);
 
-            // 7.
+            // 7. Выбираю и вывожу бронь с самой высокой ценой.
             Console.WriteLine("#7----------------------------------------------\n");
             var seventh = (from b in bookings
                            orderby b.Price descending
                            select b).FirstOrDefault();
             Console.WriteLine(seventh + "\n");
 
-            // 8.
+            // 8. Выбираю и вывожу номер комнаты, которую чаще всего бронировали.
             Console.WriteLine("#8----------------------------------------------\n");
             var eighth = hotelRooms
                 .OrderByDescending(h => h.RoomBookings.Count)
@@ -176,33 +177,35 @@ namespace lab1Net
                 .FirstOrDefault();
             Console.WriteLine(eighth + "\n");
 
-            // 9.
+            // 9. Вывожу клиентов, чьи имена содержат букву "Y".
             Console.WriteLine("#9----------------------------------------------\n");
             var ninth = from c in clients
-                             where Regex.IsMatch(c.Name, @"^Y\w+")
+                             where Regex.IsMatch(c.Name, @"(\w*)(Y|y)+(\w*)")
                              select c;
             Output(ninth);
 
-            // 10.
+            // 10. Вывожу среднюю цену на бронь.
             Console.WriteLine("#10----------------------------------------------\n");
             var tenth = (from b in bookings
                                select b.Price).Average();
             Console.WriteLine("Avarage price: " + tenth + "\n");
 
-            // 11.
+            // 11. Соединяю данные про бронирования и клиентов. Вывожу информацию про цену
+            //     брони и клиентов, который их сделали.
             Console.WriteLine("#11----------------------------------------------\n");
             var eleventh = from b in bookings
                            from c in clients
                            where b.Person == c
-                           select new { c, bookingID = b.ID };
+                           orderby c.Age ascending
+                           select new { c, b.Price };
             Output(eleventh);
 
-            // 12.
+            // 12. Вывожу бронирования с идинтификационным числом меньше 6 и больше 4.
             Console.WriteLine("#12----------------------------------------------\n");
             var twelfth = bookings.SkipWhile(b => b.ID < 4).TakeWhile(b => b.ID < 6);
             Output(twelfth);
 
-            // 13.
+            // 13. Вывожу информацию про номера отелей стандартного и президентского класса.
             Console.WriteLine("#13----------------------------------------------\n");
             var thirteenth  = (from h in hotelRooms
                                where h.Classification  == RoomClass.Standart
@@ -213,17 +216,20 @@ namespace lab1Net
                                select h);
             Output(thirteenth);
 
-            // 14.
+            // 14. Вывожу информацию про идинтификационный номер бронирования и клиента
+            //     который эту бронь совершил
             Console.WriteLine("#14----------------------------------------------\n");
             var fourteenth = bookings
                 .Join(clients, b => b.Person, c => c, (b, c) => new
                 {
-                    Booking = b.ID,
+                    BookingID = b.ID,
                     Client = new { c.Name, c.Surname }
                 });
             Output(fourteenth);
 
-            // 15.
+            // 15. Вывожу информацию про идинтификационный номер бронирования, про
+            //     номер комнаты, на сколько дней бронь и про клиента, который эту
+            //     бронь совершил.
             Console.WriteLine("#15----------------------------------------------\n");
             var fiftheenth = bookings
                 .SelectMany(b => b.BookedRooms, (bks, client) => new { bks, client })
