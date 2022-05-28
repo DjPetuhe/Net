@@ -126,7 +126,8 @@ namespace Lab2Net
 
             List<Booking> bookings = new() { booking1, booking2, booking3, booking4, booking5, booking6, booking7, booking8, booking9, booking10 };
 
-            XmlWriterSettings settings = new XmlWriterSettings();
+            //Write to xml file
+            XmlWriterSettings settings = new();
             settings.Indent = true;
             using (XmlWriter writer = XmlWriter.Create("file.xml", settings))
             {
@@ -147,8 +148,8 @@ namespace Lab2Net
                         foreach(var rooms in booking.BookedRooms)
                         {
                             writer.WriteStartElement("bookedRoom");
-                            writer.WriteElementString("startTime", rooms.Item2.Date.ToString());
-                            writer.WriteElementString("endTime", rooms.Item3.Date.ToString());
+                            writer.WriteElementString("startTime", rooms.Item2.ToShortDateString());
+                            writer.WriteElementString("endTime", rooms.Item3.ToShortDateString());
                             writer.WriteElementString("number", rooms.Item1.RoomNumber.ToString());
                             writer.WriteElementString("class", rooms.Item1.Classification.ToString());
                             writer.WriteElementString("capacity", rooms.Item1.Capacity.ToString());
@@ -171,6 +172,39 @@ namespace Lab2Net
                     }
                 }
                 writer.WriteEndElement();
+            }
+
+            //Readig from xml file
+            XmlDocument doc = new();
+            doc.Load("file.xml");
+            foreach (XmlNode booking in doc.DocumentElement)
+            {
+                Console.WriteLine($"Booking {booking["ID"].InnerText} ID;");
+                Console.WriteLine($"Price: {booking["price"].InnerText}");
+                Console.WriteLine("Client:");
+                XmlNode person = booking["client"];
+                Console.WriteLine($"\tName: {person["name"].InnerText}");
+                Console.WriteLine($"\tSurname: {person["surname"].InnerText}");
+                Console.WriteLine($"\tAge: {person["age"].InnerText}");
+                Console.WriteLine("Rooms booked:");
+                foreach (XmlNode room in booking["bookedRooms"])
+                {
+                    Console.WriteLine($"\tRoom number: {room["number"].InnerText}");
+                    Console.WriteLine($"\tStart time: {room["startTime"].InnerText}");
+                    Console.WriteLine($"\tEnd time: {room["endTime"].InnerText}");
+                    Console.WriteLine($"\tClassification: {room["class"].InnerText}");
+                    Console.WriteLine($"\tCapacity: {room["capacity"].InnerText}");
+                    if (room["extras"] != null)
+                    {
+                        Console.WriteLine("\tExtras:");
+                        foreach(XmlNode extra in room["extras"])
+                        {
+                            Console.WriteLine($"\t\t{extra["object"].InnerText}, Value: {extra["amount"].InnerText}");
+                        }
+                    }
+                    Console.Write("\n");
+                }
+                Console.WriteLine("-------------------------------------\n");
             }
         }
     }
