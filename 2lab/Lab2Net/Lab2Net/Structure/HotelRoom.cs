@@ -73,19 +73,6 @@ namespace Lab2Net
             else Console.WriteLine($"There is no {Ex} in extras.");
         }
 
-        public override string ToString()
-        {
-            string hotelRoomStr = $"Room number: {RoomNumber}, \nCapacity: {Capacity}, \nClass: {Classification}";
-            if (Extra.Count > 0)
-            {
-                hotelRoomStr += $",\nAdditionaly:";
-                foreach (var ex in Extra)
-                {
-                    hotelRoomStr += $"\n+ {ex.Key}, Amount: {ex.Value};";
-                }
-            }
-            return hotelRoomStr;
-        }
         private static bool IsThereRoom(int number)
         {
             if (roomNumbers.Contains(number)) return true;

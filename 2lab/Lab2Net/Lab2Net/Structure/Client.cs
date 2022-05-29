@@ -27,9 +27,5 @@ namespace Lab2Net
             this.Age = Age;
         }
 
-        public override string ToString()
-        {
-            return $"Name: {Name}\nSurname: {Surname}\nAge: {Age}";
-        }
     }
 }

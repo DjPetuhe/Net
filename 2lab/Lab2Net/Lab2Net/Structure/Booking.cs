@@ -35,22 +35,6 @@ namespace Lab2Net
             }
         }
 
-        public override string ToString()
-        {
-            if (!Canceled)
-            {
-                string bookingStr = $"ID: {ID},\nPrice: {Price},\nBooked:";
-                for (int i = 0; i < BookedRooms.Count; i++)
-                {
-                    bookingStr += $"\n#{i + 1}" + $"\nFrom: {BookedRooms[i].Item2.ToShortDateString()}," +
-                                  $"\nTo: {BookedRooms[i].Item3.ToShortDateString()}" +
-                                  $"\n{BookedRooms[i].Item1}";
-                }
-                return bookingStr;
-            }
-            else return "Booking canceled!";
-        }
-
         private static bool BookingPossible(List<(HotelRoom, DateTime, DateTime)> BookedRooms)
         {
             HashSet<HotelRoom> doppelgangerFinder = new();
