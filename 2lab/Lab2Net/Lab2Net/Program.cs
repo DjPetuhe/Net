@@ -132,7 +132,7 @@ namespace Lab2Net
             using (XmlWriter writer = XmlWriter.Create("file.xml", settings))
             {
                 writer.WriteStartElement("bookings");
-                foreach(var booking in bookings)
+                foreach (var booking in bookings)
                 {
                     if (!booking.Canceled)
                     {
@@ -145,7 +145,7 @@ namespace Lab2Net
                         writer.WriteElementString("age", booking.Person.Age.ToString());
                         writer.WriteEndElement();
                         writer.WriteStartElement("bookedRooms");
-                        foreach(var rooms in booking.BookedRooms)
+                        foreach (var rooms in booking.BookedRooms)
                         {
                             writer.WriteStartElement("bookedRoom");
                             writer.WriteElementString("startTime", rooms.Item2.ToShortDateString());
@@ -156,7 +156,7 @@ namespace Lab2Net
                             if (rooms.Item1.Extra.Count > 0)
                             {
                                 writer.WriteStartElement("extras");
-                                foreach(var extra in rooms.Item1.Extra)
+                                foreach (var extra in rooms.Item1.Extra)
                                 {
                                     writer.WriteStartElement("extra");
                                     writer.WriteElementString("object", extra.Key);
@@ -197,14 +197,210 @@ namespace Lab2Net
                     if (room["extras"] != null)
                     {
                         Console.WriteLine("\tExtras:");
-                        foreach(XmlNode extra in room["extras"])
+                        foreach (XmlNode extra in room["extras"])
                         {
                             Console.WriteLine($"\t\t{extra["object"].InnerText}, Value: {extra["amount"].InnerText}");
                         }
                     }
                     Console.Write("\n");
                 }
-                Console.WriteLine("-------------------------------------\n");
+                Console.WriteLine("-------------------------------------------------\n");
+            }
+
+            //Linq to xml запросы
+            XDocument file = XDocument.Load("file.xml");
+
+            // 1.  1
+            Console.WriteLine("#1-----------------------------------------------\n");
+            var first = from x in file.Root.Elements("booking")
+                        select x.Element("ID").Value;
+            Output(first);
+
+            // 2.  2
+            Console.WriteLine("#2-----------------------------------------------\n");
+            var second = file.Root
+                .Descendants("client")
+                .Select(b => new
+                {
+                    Name = b.Element("name").Value,
+                    Surname = b.Element("surname").Value
+                })
+                .Distinct();
+            Output(second);
+
+            // 3. 
+            Console.WriteLine("#3-----------------------------------------------\n");
+            var third = from x in file.Root.Descendants("bookedRoom")
+                        group x by x.Element("number").Value into gr
+                        orderby gr.Key
+                        select new
+                        {
+                            RoomNumber = gr.Key,
+                            AmountOfBookings = gr.Count()
+                        };
+            Output(third);
+
+            // 4. 
+            Console.WriteLine("#4-----------------------------------------------\n");
+            var fourth = file.Root
+                .Descendants("client")
+                .GroupBy(x => new { Name = x.Element("name").Value, Surname = x.Element("surname").Value })
+                .Select(x => new { Person = x.Key, AmountOfBookings = x.Count() });
+            Output(fourth);
+
+            // 5. 3
+            Console.WriteLine("#5-----------------------------------------------\n");
+            var fifth = (from x in file.Root.Descendants("client")
+                         where Convert.ToInt32(x.Element("age").Value) > 30
+                         orderby Convert.ToInt32(x.Element("age").Value)
+                         select new
+                         {
+                             Name = x.Element("name").Value,
+                             Surname = x.Element("surname").Value,
+                             Age = x.Element("age").Value
+                         }).Distinct();
+            Output(fifth);
+
+            // 6. 4
+            Console.WriteLine("#6-----------------------------------------------\n");
+            var sixth = file.Root
+                .Elements("booking")
+                .Select(x => new
+                {
+                    ID = x.Element("ID").Value,
+                    Price = x.Element("price").Value
+                })
+                .Where(x => Convert.ToInt32(x.Price) < 500)
+                .OrderByDescending(x => x.Price);
+            Output(sixth);
+
+            // 7. 
+            Console.WriteLine("#7-----------------------------------------------\n");
+            var seventh = (from x in file.Root.Descendants("bookedRooms")
+                           select Convert.ToDouble(x.Elements("bookedRoom").Count())).Average();
+            Console.WriteLine(seventh + "\n");
+
+            // 8. 
+            Console.WriteLine("#8-----------------------------------------------\n");
+            var eighth = file.Root
+                .Elements("booking")
+                .GroupBy(x => x.Elements("bookedRooms"))
+                .Select(x => new 
+                { 
+                    bookingID = x.Elements("ID").FirstOrDefault().Value,
+                    AmountOfExtras = (
+                        from ae in x.Key.Descendants("amount")
+                        select Convert.ToInt32(ae.Value)
+                        ).Sum()
+                });
+            Output(eighth);
+
+            // 9. 
+            Console.WriteLine("#9-----------------------------------------------\n");
+            var ninth = (from x in file.Root.Elements("booking")
+                         group x by x.Elements("client") into gr
+                         orderby gr.Key.Elements("age").FirstOrDefault().Value
+                         select new
+                         {
+                             Name = gr.Key.Elements("name").FirstOrDefault().Value,
+                             Surname = gr.Key.Elements("surname").FirstOrDefault().Value,
+                             Age = gr.Key.Elements("age").FirstOrDefault().Value
+                         }).FirstOrDefault();
+
+            Console.WriteLine(ninth + "\n");
+
+            // 10. 
+            Console.WriteLine("#10----------------------------------------------\n");
+            var tenth = file.Root
+                .Elements("booking")
+                .OrderBy(x => DateTime.Parse((x.Descendants("startTime")
+                                               .OrderBy(x => DateTime.Parse(x.Value)))
+                                               .FirstOrDefault()
+                                               .Value))
+                .Select(x => new
+                {
+                    bookingID = x.Element("ID").Value,
+                    earliestDate = x.Descendants("startTime")
+                                    .OrderBy(x => DateTime.Parse(x.Value))
+                                    .FirstOrDefault().Value
+                });
+            Output(tenth);
+
+            // 11. 
+            Console.WriteLine("#11----------------------------------------------\n");
+            var eleventh = from x in file.Root.Elements("booking")
+                           let BestDays = (from y in x.Descendants("bookedRoom")
+                                           let Days = DateTime.Parse(y.Element("endTime").Value).Subtract(DateTime.Parse(y.Element("startTime").Value)).Days + 1
+                                           orderby Days descending
+                                           select Days).FirstOrDefault()
+                           orderby BestDays descending
+                           select new
+                           {
+                               bookingID = x.Element("ID").Value,
+                               Days = BestDays
+                           };
+            Output(eleventh);
+
+            // 12. 
+            Console.WriteLine("#12----------------------------------------------\n");
+            var twelfth = file.Root
+                .Elements("booking")
+                .OrderBy(x => Convert.ToInt32(x.Element("price").Value))
+                .SkipWhile(x => Convert.ToInt32(x.Element("price").Value) < 1000)
+                .TakeWhile(x => Convert.ToInt32(x.Element("price").Value) < 2000)
+                .Select(x => new 
+                {
+                    bookingID = x.Element("ID").Value,
+                    price = x.Element("price").Value
+                });
+            Output(twelfth);
+
+            // 13. 
+            Console.WriteLine("#13----------------------------------------------\n");
+            var thirteenth = (from x in file.Root.Descendants("extra")
+                             where Regex.IsMatch(x.Element("object").Value, @"^(C|c)")
+                             select x.Element("object").Value).Distinct();
+            Output(thirteenth);
+
+            // 14. 
+            Console.WriteLine("#14----------------------------------------------\n");
+            var fourteenth = file.Root.Elements("booking")
+                                       .Where(x => Convert.ToInt32(x.Element("price").Value) > 3000)
+                                       .Select(x => x)
+                              .Concat(file.Root.Elements("booking")
+                                               .Where(x => x.Descendants("bookedRoom").Count() > 1)
+                                               .Select(x => x))
+                              .Select(x => new
+                              {
+                                  bookingID = x.Element("ID").Value,
+                                  price = x.Element("price").Value,
+                                  amountOfRooms = x.Descendants("bookedRoom").Count()
+                              })
+                             .Distinct();
+
+            Output(fourteenth);
+
+            // 15. 
+            Console.WriteLine("#15----------------------------------------------\n");
+            var fiftheenth = from x in file.Root.Elements("booking")
+                             where (from ae in x.Descendants("amount") select Convert.ToInt32(ae.Value)).Sum() > 5
+                             join y in file.Root.Elements("booking") on x.Element("ID") equals y.Element("ID")
+                             where Regex.IsMatch(y.Descendants("name").FirstOrDefault().Value, @"(\w*)(R|r)a(\w*)")
+                             select new
+                             {
+                                 BookingID = x.Element("ID").Value,
+                                 AmountOfExtras = (from ae in x.Descendants("amount")
+                                                   select Convert.ToInt32(ae.Value)).Sum(),
+                                 Name =  x.Descendants("name").FirstOrDefault().Value
+                             };
+            Output(fiftheenth);
+        }
+
+        public static void Output<T>(IEnumerable<T> l)
+        {
+            foreach (T el in l)
+            {
+                Console.WriteLine(el + "\n");
             }
         }
     }
