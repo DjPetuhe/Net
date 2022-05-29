@@ -210,13 +210,13 @@ namespace Lab2Net
             //Linq to xml запросы
             XDocument file = XDocument.Load("file.xml");
 
-            // 1.  1
+            // 1. Выбираю и вывожу идинтификационный номер всех бронирований
             Console.WriteLine("#1-----------------------------------------------\n");
             var first = from x in file.Root.Elements("booking")
                         select x.Element("ID").Value;
             Output(first);
 
-            // 2.  2
+            // 2. Выбираю и вывожу имена и фамилии всех клиентов, совершавших бронирования
             Console.WriteLine("#2-----------------------------------------------\n");
             var second = file.Root
                 .Descendants("client")
@@ -228,7 +228,7 @@ namespace Lab2Net
                 .Distinct();
             Output(second);
 
-            // 3. 
+            // 3. Выибраю и вывожу номера комнат и количество бронирований этих номеров
             Console.WriteLine("#3-----------------------------------------------\n");
             var third = from x in file.Root.Descendants("bookedRoom")
                         group x by x.Element("number").Value into gr
@@ -240,7 +240,7 @@ namespace Lab2Net
                         };
             Output(third);
 
-            // 4. 
+            // 4. Выбираю и вывожу клиента и количество броней, сделанных этим клиентом
             Console.WriteLine("#4-----------------------------------------------\n");
             var fourth = file.Root
                 .Descendants("client")
@@ -248,7 +248,7 @@ namespace Lab2Net
                 .Select(x => new { Person = x.Key, AmountOfBookings = x.Count() });
             Output(fourth);
 
-            // 5. 3
+            // 5. Выбираю и вывожу совершавших бронь клиентов, которым больше 30
             Console.WriteLine("#5-----------------------------------------------\n");
             var fifth = (from x in file.Root.Descendants("client")
                          where Convert.ToInt32(x.Element("age").Value) > 30
@@ -261,7 +261,8 @@ namespace Lab2Net
                          }).Distinct();
             Output(fifth);
 
-            // 6. 4
+            // 6. Выбираю и вывожу идентефикационные номера и цену бронирований,
+            //    у которых цена меньше 500
             Console.WriteLine("#6-----------------------------------------------\n");
             var sixth = file.Root
                 .Elements("booking")
@@ -274,13 +275,14 @@ namespace Lab2Net
                 .OrderByDescending(x => x.Price);
             Output(sixth);
 
-            // 7. 
+            // 7. Вывожу среднее количество номеров, которые бронируют за раз
             Console.WriteLine("#7-----------------------------------------------\n");
             var seventh = (from x in file.Root.Descendants("bookedRooms")
                            select Convert.ToDouble(x.Elements("bookedRoom").Count())).Average();
             Console.WriteLine(seventh + "\n");
 
-            // 8. 
+            // 8. Выбираю и вывожу идентефикационные номера броней и количество
+            //    доп. опций во всех забронирвоанных комнатах.
             Console.WriteLine("#8-----------------------------------------------\n");
             var eighth = file.Root
                 .Elements("booking")
@@ -295,7 +297,7 @@ namespace Lab2Net
                 });
             Output(eighth);
 
-            // 9. 
+            // 9. Вывожу самого молодого клиента, совершавшего бронь
             Console.WriteLine("#9-----------------------------------------------\n");
             var ninth = (from x in file.Root.Elements("booking")
                          group x by x.Elements("client") into gr
@@ -309,7 +311,8 @@ namespace Lab2Net
 
             Console.WriteLine(ninth + "\n");
 
-            // 10. 
+            // 10. Выбираю и вывожу идентефикационные номера броней и самую
+            //    ранюю дату брони комнаты. Сортирую по дате начала бронирвоания
             Console.WriteLine("#10----------------------------------------------\n");
             var tenth = file.Root
                 .Elements("booking")
@@ -326,7 +329,8 @@ namespace Lab2Net
                 });
             Output(tenth);
 
-            // 11. 
+            // 11. Выбираю и вывожу идентефикационные номера броней и самое большое
+            //    количество дней брони комнаты. Сортирую по кол-ву дней
             Console.WriteLine("#11----------------------------------------------\n");
             var eleventh = from x in file.Root.Elements("booking")
                            let BestDays = (from y in x.Descendants("bookedRoom")
@@ -341,7 +345,8 @@ namespace Lab2Net
                            };
             Output(eleventh);
 
-            // 12. 
+            // 12. Выбираю идентефикационные номера броней и цену на бронь.
+            //     Вывожу только бронирования в диапазоне от тысячи до двух тысяч
             Console.WriteLine("#12----------------------------------------------\n");
             var twelfth = file.Root
                 .Elements("booking")
@@ -355,14 +360,15 @@ namespace Lab2Net
                 });
             Output(twelfth);
 
-            // 13. 
+            // 13. Вывожу доп. опции которые начинаются с буквы "с"
             Console.WriteLine("#13----------------------------------------------\n");
             var thirteenth = (from x in file.Root.Descendants("extra")
                              where Regex.IsMatch(x.Element("object").Value, @"^(C|c)")
                              select x.Element("object").Value).Distinct();
             Output(thirteenth);
 
-            // 14. 
+            // 14. Выбираю идентификационные номера брони, цену и количество забронированных комнат.
+            //     Выбираю только те, где цена больше 3000 или те, кто количество забронирвоанных комнат больше 1
             Console.WriteLine("#14----------------------------------------------\n");
             var fourteenth = file.Root.Elements("booking")
                                        .Where(x => Convert.ToInt32(x.Element("price").Value) > 3000)
@@ -380,7 +386,8 @@ namespace Lab2Net
 
             Output(fourteenth);
 
-            // 15. 
+            // 15. Выбираю идентефикационные номера брони, колиечство доп. опций и имя клиента.
+            //     Выбираю только те, где количество доп. опций больше 5 и имя клиента содержит "ra"
             Console.WriteLine("#15----------------------------------------------\n");
             var fiftheenth = from x in file.Root.Elements("booking")
                              where (from ae in x.Descendants("amount") select Convert.ToInt32(ae.Value)).Sum() > 5
