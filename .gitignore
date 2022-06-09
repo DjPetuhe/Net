@@ -21,3 +21,21 @@
 *.docx
 
 2lab/Lab2Net/Lab2Net/bin/Debug/net5.0/
+
+3lab/Lab3Net/.vs/Lab3Net/v16/
+
+*.json
+
+*.dll
+
+*.exe
+
+*.pdb
+
+3lab/Lab3Net/Lab3Net/obj/Debug/net5.0/
+
+*.props
+
+*.targets
+
+*.cache
