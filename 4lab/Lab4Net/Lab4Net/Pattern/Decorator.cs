@@ -13,8 +13,7 @@ namespace Lab4Net.Pattern
     }
     class MushroomDecorator : Decorator
     {
-        public MushroomDecorator(IPizza pizza) : base(pizza)
-        { }
+        public MushroomDecorator(IPizza pizza) : base(pizza) { }
         public override int GetCost() => pizza.GetCost() + 20;
         public override string GetName() => $"{pizza.GetName()} + mushrooms";
     }

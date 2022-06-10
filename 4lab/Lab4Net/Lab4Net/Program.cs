@@ -5,7 +5,7 @@ namespace Lab4Net
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             IPizza pizza1 = new PizzaNapoletana();
             PrintPizza(pizza1);
