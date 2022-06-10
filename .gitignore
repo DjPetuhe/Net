@@ -39,3 +39,9 @@
 *.targets
 
 *.cache
+
+mkr
+
+4lab/Lab4Net/.vs/Lab4Net/v16/.suo
+
+4lab/Lab4Net/Lab4Net/obj/Debug/net5.0/
